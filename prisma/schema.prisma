@@ -3,16 +3,45 @@ generator client {
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  email     String    @unique
   name      String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+
+  // Relations
+  payments  Payment[]
 }
 
+model Service {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  price       Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  payments    Payment[]
+}
+
+model Payment {
+  id            String    @id @default(cuid())
+  userId        String
+  serviceId     String
+  amount        Float
+  currency      String     @default("USD")
+  status        String     @default("PENDING") // can be PENDING, COMPLETED, FAILED, REFUNDED
+  paypalOrderId String?    // store PayPal order or transaction ID
+  createdAt     DateTime   @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id])
+}
