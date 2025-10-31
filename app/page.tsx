@@ -85,7 +85,7 @@ export default function Home() {
               { step: "4", title: "Trade", desc: "Use predictions in your trading strategy", color: "orange" }
             ].map((item) => (
               <div key={item.step} className="text-center font-handwritten group">
-                <div className={`w-20 h-20 border-2 border-${item.color}-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold bg-white group-hover:bg-${item.color}-50 transition-colors`}>
+                <div className={`w-20 h-20 border-2 ${getBorderColor(item.color)} rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold bg-white ${getHoverBgColor(item.color)} transition-colors`}>
                   {item.step}
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-black">{item.title}</h3>
@@ -107,8 +107,8 @@ export default function Home() {
               { name: "Sarah M.", text: "Love getting alerts directly on Telegram. So convenient!", color: "blue" },
               { name: "Mike R.", text: "The AI analysis is much better than my own research.", color: "purple" }
             ].map((testimonial, index) => (
-              <div key={index} className={`border-l-4 border-${testimonial.color}-500 p-6 rounded-r-lg bg-gray-50 font-handwritten hover:shadow-sm transition-all`}>
-                <div className="text-4xl mb-4 text-gray-400">"</div>
+              <div key={index} className={`border-l-4 ${getBorderColor(testimonial.color)} p-6 rounded-r-lg bg-gray-50 font-handwritten hover:shadow-sm transition-all`}>
+                <div className="text-4xl mb-4 text-gray-400">&ldquo;</div>
                 <p className="text-lg text-gray-700 mb-4 italic">{testimonial.text}</p>
                 <p className="text-black font-bold">- {testimonial.name}</p>
               </div>
@@ -118,6 +118,27 @@ export default function Home() {
       </section>
     </div>
   );
+}
+
+// Helper functions for dynamic color classes
+function getBorderColor(color: string) {
+  switch (color) {
+    case 'green': return 'border-green-500';
+    case 'blue': return 'border-blue-500';
+    case 'purple': return 'border-purple-500';
+    case 'orange': return 'border-orange-500';
+    default: return 'border-gray-500';
+  }
+}
+
+function getHoverBgColor(color: string) {
+  switch (color) {
+    case 'green': return 'group-hover:bg-green-50';
+    case 'blue': return 'group-hover:bg-blue-50';
+    case 'purple': return 'group-hover:bg-purple-50';
+    case 'orange': return 'group-hover:bg-orange-50';
+    default: return 'group-hover:bg-gray-50';
+  }
 }
 
 // Hand-drawn SVG Icons
