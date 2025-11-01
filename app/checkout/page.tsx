@@ -18,6 +18,7 @@ interface Service {
   description?: string;
 }
 
+// PayPal type definitions
 interface PayPalNamespace {
   Buttons: (config: PayPalButtonConfig) => { render: (selector: string) => void };
 }
@@ -49,28 +50,27 @@ export default function CheckoutPage() {
   const { user } = useUser();
   const userId = user?.id || null;
 
-  // 🔹 Fetch service details
+  // Fetch service details
   useEffect(() => {
-  if (!serviceId) return;
-  const fetchService = async () => {
-    try {
-      const res = await fetch(`/api/service?id=${serviceId}`);
-      const data: { success: boolean; service?: Service; message?: string } = await res.json();
-      if (!res.ok || !data.success || !data.service) throw new Error(data.message || 'Failed to load service.');
-      setService(data.service); // ✅ Extract the service object
-      toast.success(data.message || 'Service loaded successfully!');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      toast.error(message || 'Failed to load service.');
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchService();
-}, [serviceId]);
+    if (!serviceId) return;
+    const fetchService = async () => {
+      try {
+        const res = await fetch(`/api/service?id=${serviceId}`);
+        const data: { success: boolean; service?: Service; message?: string } = await res.json();
+        if (!res.ok || !data.success || !data.service) throw new Error(data.message || 'Failed to load service.');
+        setService(data.service);
+        toast.success(data.message || 'Service loaded successfully!');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        toast.error(message || 'Failed to load service.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchService();
+  }, [serviceId]);
 
-
-  // 🔹 Add PayPal button
+  // Add PayPal button
   useEffect(() => {
     if (!service || !userId || typeof service.price !== 'number') return;
 
