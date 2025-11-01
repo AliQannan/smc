@@ -7,7 +7,7 @@ import { Caveat } from 'next/font/google'
 import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-
+import { Toaster } from 'sonner';
 const caveat = Caveat({
   subsets: ['latin'],
   variable: '--font-caveat',
@@ -31,6 +31,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-grow">
               {children}
+                 <Toaster richColors position="top-right" />
             </main>
             <Footer />
           </div>

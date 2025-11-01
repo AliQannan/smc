@@ -1,7 +1,37 @@
 // app/page.tsx
 import Link from 'next/link';
+import ServicesSection from './components/ServicesSection';
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient() ;
+// Define the Service type
+interface Service {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default function Home() {
+// This function will fetch services from your database
+async function getServices(): Promise<Service[]> {
+  try {
+    const services = await prisma.service.findMany({
+      orderBy: {
+        price: 'asc'
+      }
+    });
+    return services;
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  // Fetch services on the server
+  const services = await getServices();
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -71,6 +101,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Services Section - Added after hero section */}
+      <ServicesSection services={services} />
 
       {/* How it Works Section */}
       <section className="py-20 px-4 bg-gray-50">
