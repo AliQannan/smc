@@ -1,10 +1,18 @@
+// app/api/payment/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+interface PaymentRequest {
+  userId: string;
+  serviceId: string;
+  paypalOrderId: string;
+  amount: number;
+}
 
 export async function POST(req: Request) {
   try {
-    const { userId: clerkId, serviceId, paypalOrderId, amount } = await req.json();
+    const body: PaymentRequest = await req.json();
+    const { userId: clerkId, serviceId, paypalOrderId, amount } = body;
 
     if (!clerkId || !serviceId || !paypalOrderId || !amount) {
       return NextResponse.json(
@@ -41,13 +49,14 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { success: true, message: "Payment saved and email sent.", payment },
+      { success: true, message: "Payment saved successfully.", payment },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error("❌ Error saving payment:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("❌ Error saving payment:", message);
     return NextResponse.json(
-      { success: false, message: "Server error.", error: error?.message },
+      { success: false, message: "Server error.", error: message },
       { status: 500 }
     );
   }
