@@ -37,11 +37,46 @@ interface PayPalButtonConfig {
 
 interface PayPalActions {
   order: {
-    create: (order: any) => Promise<string>;
-    capture: () => Promise<{ id: string }>;
+    create: (order: PayPalOrder) => Promise<string>;
+    capture: () => Promise<PayPalCaptureResponse>;
   };
 }
-//edit
+
+interface PayPalOrder {
+  intent?: string;
+  purchase_units: PurchaseUnit[];
+}
+
+interface PurchaseUnit {
+  description: string;
+  amount: {
+    value: string;
+    currency_code?: string;
+  };
+}
+
+interface PayPalCaptureResponse {
+  id: string;
+  status: string;
+  payer?: {
+    name: {
+      given_name: string;
+      surname: string;
+    };
+    email_address: string;
+  };
+  purchase_units?: Array<{
+    payments?: {
+      captures?: Array<{
+        id: string;
+        status: string;
+        amount: {
+          value: string;
+        };
+      }>;
+    };
+  }>;
+}
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
@@ -88,12 +123,20 @@ export default function CheckoutPage() {
 
         window.paypal.Buttons({
           style: { layout: 'vertical', color: 'gold', shape: 'pill', label: 'paypal' },
-          createOrder: (_data, actions) => {
+          createOrder: (_data: unknown, actions: PayPalActions) => {
             return actions.order.create({
-              purchase_units: [{ description: service.name, amount: { value: service.price.toFixed(2) } }],
+              purchase_units: [
+                { 
+                  description: service.name, 
+                  amount: { 
+                    value: service.price.toFixed(2),
+                    currency_code: 'USD'
+                  } 
+                }
+              ],
             });
           },
-          onApprove: async (_data, actions) => {
+          onApprove: async (_data: unknown, actions: PayPalActions) => {
             try {
               const details = await actions.order.capture();
 
