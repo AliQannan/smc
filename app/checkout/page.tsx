@@ -41,6 +41,7 @@ interface PayPalActions {
     capture: () => Promise<{ id: string }>;
   };
 }
+//edit
 
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
