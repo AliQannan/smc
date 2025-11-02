@@ -3,14 +3,15 @@ import { type Metadata } from 'next'
 import {
   ClerkProvider,
 } from '@clerk/nextjs'
-import { Caveat } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { Toaster } from 'sonner';
-const caveat = Caveat({
+
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-caveat',
+  variable: '--font-inter',
 })
 
 export const metadata: Metadata = {
@@ -26,14 +27,14 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${caveat.variable} antialiased`}>
+        <body className={`${inter.variable} antialiased`}>
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">
               {children}
-                 <Toaster richColors position="top-right" />
             </main>
             <Footer />
+            <Toaster richColors position="top-right" />
           </div>
         </body>
       </html>
