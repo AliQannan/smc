@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
@@ -78,7 +78,8 @@ interface PayPalCaptureResponse {
   }>;
 }
 
-export default function CheckoutPage() {
+// Inner component that uses useSearchParams
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const serviceId = searchParams.get('service');
   const [service, setService] = useState<Service | null>(null);
@@ -88,7 +89,11 @@ export default function CheckoutPage() {
 
   // Fetch service details
   useEffect(() => {
-    if (!serviceId) return;
+    if (!serviceId) {
+      setLoading(false);
+      return;
+    }
+    
     const fetchService = async () => {
       try {
         const res = await fetch(`/api/service?id=${serviceId}`);
@@ -205,5 +210,20 @@ export default function CheckoutPage() {
         <div id="paypal-button-container" className="flex justify-center"></div>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-16">
+        <div className="max-w-xl w-full bg-white rounded-3xl shadow-xl p-10">
+          <p className="text-center mt-20 text-xl text-gray-600">Loading checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
